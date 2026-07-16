@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 // In-memory Store implementation using HashMap
-public class MapStore implements Store{
+public class MapStore implements Store {
 
     private final Map<String, String> data = new HashMap<>();
 

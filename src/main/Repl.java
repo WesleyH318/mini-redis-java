@@ -3,6 +3,7 @@ package main;
 import java.util.Scanner;
 import main.commands.Command;
 import main.commands.CommandFactory;
+import main.commands.ExitCommand;
 
 // Command loop reads input and dispatches via CommandFactory
 public class Repl {
@@ -26,13 +27,14 @@ public class Repl {
 
             String[] parts = line.split("\\s+", 3);
 
-            if (parts[0].equalsIgnoreCase("EXIT")) {
+            Command command = factory.create(parts[0]);
+            String result = command.execute(store, parts);
+
+            if (ExitCommand.EXIT_SIGNAL.equals(result)) {
                 System.out.println("bye");
                 return;
             }
-
-            Command command = factory.create(parts[0]);
-            System.out.println(command.execute(store, parts));
+            System.out.println(result);
         }
     }
 }

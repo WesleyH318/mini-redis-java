@@ -14,6 +14,8 @@ public class CommandFactory {
         commands.put("GET", new GetCommand());
         commands.put("DEL", new DelCommand());
         commands.put("HELP", new HelpCommand());
+        commands.put("EXIT", new ExitCommand());
+        commands.put("SIZE", new SizeCommand());
     }
 
     // Returns the Command for the given word
