@@ -22,33 +22,27 @@ A single-node, in-memory key-value store inspired by Redis, built in Java to dem
 ## Sprint 3 Design Patterns
 
 - Full REPL command loop (SET / GET / DEL / SIZE / HELP / EXIT)
-  **1. Command pattern** — UML: [`command-pattern.png`](command-pattern.png)
+- **Command pattern**: each verb is its own class implementing
+  `Command.execute(store, args)`. Classes: `Command` (interface),
+  `SetCommand`, `GetCommand`, `DelCommand`, `SizeCommand`, `HelpCommand`,
+  `ExitCommand`, `UnknownCommand` (fallback). `Repl` is the invoker,
+  `Store`/`MapStore` is the receiver. UML: `command-pattern.png`
+- **Simple Factory (registry-based)**: `CommandFactory.create(commandWord)`
+  maps command words to Command objects, replacing the original switch
+  statement in `Repl`. `UnknownCommand` is the getOrDefault fallback.
+  UML: `simple-factory.png`
+- Adding a new command now means one new class + one registry line:
+  the Repl itself never changes (open/closed principle). `SizeCommand`
+  was added this way as a demonstration.
 
-- Interface: `Command` (`execute(store, args)`)
-- Concrete commands: `SetCommand`, `GetCommand`, `DelCommand`, `SizeCommand`, `HelpCommand`, `ExitCommand`, `UnknownCommand`
-- Invoker: `Repl`; Receiver: `Store` / `MapStore`
+## Problems Implementing the Patterns
 
-Each verb is its own class. Commands return strings instead of printing,
-so they can be unit tested without capturing console output.
-
-**2. Simple Factory (registry-based)** — UML: [`simple-factory.png`](simple-factory.png)
-
-- Factory: `CommandFactory` (`create(commandWord)`), with `UnknownCommand` as the `getOrDefault` fallback
-- Client: `Repl`
-
-`CommandFactory` maps command words to Command objects, replacing the
-original switch statement in `Repl`. Adding a new command now means one
-new class + one registry line — the Repl never changes (open/closed
-principle). `SizeCommand` was added this way as a demonstration.
-
-### Problems implementing the patterns
-
-- **EXIT bypassed the Command abstraction at first** — it was special-cased
-  in the Repl loop. Fixed by making `ExitCommand` a real Command that
-  returns a sentinel (`EXIT_SIGNAL`) the Repl checks to stop.
-- **Misnamed the factory** — I originally called it Factory Method; a code
-  review pointed out that's a different GoF pattern (subclassed creators).
-  Renamed to Simple Factory in the README, UML, and code comment.
+- EXIT originally bypassed the Command abstraction (special-cased in the
+  Repl loop). Fixed by making `ExitCommand` a real Command that returns a
+  sentinel string the Repl checks to know when to stop.
+- I first called the factory "Factory Method" but that's a different GoF
+  pattern (subclassed creators), so it was renamed to Simple Factory in
+  the README, UML, and code comment.
 
 ## Planned Final Submission
 
