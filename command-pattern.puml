@@ -1,0 +1,51 @@
+@startuml command-pattern
+!pragma layout smetana
+skinparam classAttributeIconSize 0
+title Command Pattern — mini-redis-java
+
+interface Command <<Command>> {
+  +execute(store: Store, args: String[]): String
+}
+
+class Repl <<Invoker>> {
+  -store: Store
+  -factory: CommandFactory
+  +run(): void
+}
+
+interface Store <<Receiver>> {
+  +set(key: String, value: String): void
+  +get(key: String): String
+  +delete(key: String): boolean
+  +size(): int
+}
+
+class SetCommand
+class GetCommand
+class DelCommand
+class SizeCommand
+class HelpCommand
+class ExitCommand {
+  {static} +EXIT_SIGNAL: String
+}
+class UnknownCommand
+
+Command <|.. SetCommand
+Command <|.. GetCommand
+Command <|.. DelCommand
+Command <|.. SizeCommand
+Command <|.. HelpCommand
+Command <|.. ExitCommand
+Command <|.. UnknownCommand
+
+Repl ..> Command : invokes execute()
+SetCommand ..> Store
+GetCommand ..> Store
+DelCommand ..> Store
+SizeCommand ..> Store
+
+note right of ExitCommand
+  Returns EXIT_SIGNAL sentinel;
+  Repl checks it to stop the loop
+end note
+@enduml
