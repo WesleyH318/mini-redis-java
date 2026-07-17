@@ -1,0 +1,45 @@
+@startuml simple-factory
+!pragma layout smetana
+skinparam classAttributeIconSize 0
+title Simple Factory (registry-based) — mini-redis-java
+
+class CommandFactory <<Simple Factory>> {
+  -commands: Map<String, Command>
+  +create(commandWord: String): Command
+}
+
+interface Command {
+  +execute(store: Store, args: String[]): String
+}
+
+class Repl <<Client>> {
+  +run(): void
+}
+
+class SetCommand
+class GetCommand
+class DelCommand
+class SizeCommand
+class HelpCommand
+class ExitCommand
+class UnknownCommand <<default>>
+
+Repl ..> CommandFactory : create(commandWord)
+CommandFactory o--> "many" Command : commands
+CommandFactory ..> UnknownCommand : getOrDefault fallback
+
+Command <|.. SetCommand
+Command <|.. GetCommand
+Command <|.. DelCommand
+Command <|.. SizeCommand
+Command <|.. HelpCommand
+Command <|.. ExitCommand
+Command <|.. UnknownCommand
+
+note bottom of CommandFactory
+  Registry-based Simple Factory
+  (not GoF Factory Method: no
+  subclassed creator / factory method)
+  New command = 1 class + 1 registry entry
+end note
+@enduml

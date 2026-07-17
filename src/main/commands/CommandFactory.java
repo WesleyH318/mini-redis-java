@@ -3,7 +3,7 @@ package main.commands;
 import java.util.HashMap;
 import java.util.Map;
 
-// Factory Method maps command words to Command objects.
+// Registry-based Simple Factory: maps command words to Command objects
 public class CommandFactory {
 
     private final Map<String, Command> commands = new HashMap<>();
