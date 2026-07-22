@@ -35,6 +35,13 @@ A single-node, in-memory key-value store inspired by Redis, built in Java to dem
   the Repl itself never changes (open/closed principle). `SizeCommand`
   was added this way as a demonstration.
 
+## Sprint 4 Progress
+
+- Implemented the Decorator and Strategy patterns (details above)
+- `Main` now stacks both: a `LoggingStore` wrapping a `BoundedStore`
+  (capacity 3, evict-oldest) wrapping a `MapStore`
+- Added `LoggingStoreTest` and `BoundedStoreTest`
+
 ## Problems Implementing the Patterns
 
 - EXIT originally bypassed the Command abstraction (special-cased in the
@@ -43,6 +50,11 @@ A single-node, in-memory key-value store inspired by Redis, built in Java to dem
 - I first called the factory "Factory Method" but that's a different GoF
   pattern (subclassed creators), so it was renamed to Simple Factory in
   the README, UML, and code comment.
+- Decorator wrapping order matters: evictions inside `BoundedStore` don't
+    show up in the log because `LoggingStore` wraps the outside. Wrapping
+    the other way would log them.
+- `EvictOldestPolicy` is FIFO, not LRU: overwriting a key doesn't refresh
+  its position. LRU could be added later as a third policy.
 
 ## Design Patterns (4 of 6 so far)
 
