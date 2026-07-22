@@ -1,0 +1,36 @@
+@startuml decorator-pattern
+!pragma layout smetana
+skinparam classAttributeIconSize 0
+title Decorator Pattern — mini-redis-java
+
+interface Store <<Component>> {
+  +set(key: String, value: String): void
+  +get(key: String): String
+  +delete(key: String): boolean
+  +size(): int
+}
+
+class MapStore <<ConcreteComponent>> {
+  -data: Map<String, String>
+}
+
+class LoggingStore <<Decorator>> {
+  -inner: Store
+  -out: PrintStream
+  +LoggingStore(inner: Store)
+  +LoggingStore(inner: Store, out: PrintStream)
+}
+
+class Main <<Client>>
+
+Store <|.. MapStore
+Store <|.. LoggingStore
+LoggingStore o--> "1" Store : inner (delegates to)
+Main ..> LoggingStore : new LoggingStore(new MapStore())
+
+note right of LoggingStore
+  Implements Store AND wraps a Store.
+  Logs each operation, then delegates.
+  Repl is unchanged - it only sees Store.
+end note
+@enduml
