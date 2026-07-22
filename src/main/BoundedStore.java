@@ -4,8 +4,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-// Capacity-limited Store. When full, delegates the eviction
-// decision to an EvictionPolicy (Strategy pattern).
+// when full, delegates the eviction decision to an EvictionPolicy (Strategy pattern).
 public class BoundedStore implements Store {
 
     private final Store inner;

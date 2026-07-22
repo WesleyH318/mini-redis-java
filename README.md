@@ -44,6 +44,45 @@ A single-node, in-memory key-value store inspired by Redis, built in Java to dem
   pattern (subclassed creators), so it was renamed to Simple Factory in
   the README, UML, and code comment.
 
+## Design Patterns (4 of 6 so far)
+
+### 1. Command
+
+Each REPL verb is its own class implementing `Command.execute(store, args)`.
+Classes: `Command` (interface), `SetCommand`, `GetCommand`, `DelCommand`,
+`SizeCommand`, `HelpCommand`, `ExitCommand`, `UnknownCommand` (fallback).
+`Repl` is the invoker, `Store`/`MapStore` is the receiver.
+
+![Command pattern UML](command-pattern.png)
+
+### 2. Simple Factory (registry-based)
+
+`CommandFactory.create(commandWord)` maps command words to Command objects,
+replacing the original switch statement in `Repl`. `UnknownCommand` is the
+getOrDefault fallback. Adding a new command means one new class + one
+registry line: the Repl never changes (open/closed principle).
+
+![Simple Factory UML](simple-factory.png)
+
+### 3. Decorator
+
+`LoggingStore` implements `Store` and wraps another `Store`, logging each
+operation before delegating. `Repl` is unchanged, it only sees the `Store`
+interface. Classes: `Store` (component), `MapStore` (concrete component),
+`LoggingStore` (decorator), `Main` (client).
+
+![Decorator pattern UML](decorator-pattern.png)
+
+### 4. Strategy (eviction policy)
+
+`BoundedStore` is a capacity-limited `Store` that delegates the "store is
+full" decision to an `EvictionPolicy`. Classes: `EvictionPolicy` (strategy
+interface), `EvictOldestPolicy` (FIFO eviction), `RejectWritesPolicy`
+(refuse new keys), `BoundedStore` (context). The policy is chosen in `Main`
+and swappable without touching `BoundedStore`.
+
+![Strategy pattern UML](strategy-pattern.png)
+
 ## Planned Final Submission
 
 By the final, I plan to demo a working REPL where a user can store,
