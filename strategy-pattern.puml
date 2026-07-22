@@ -1,0 +1,44 @@
+@startuml strategy-pattern
+!pragma layout smetana
+skinparam classAttributeIconSize 0
+title Strategy Pattern (eviction policy) — mini-redis-java
+
+interface EvictionPolicy <<Strategy>> {
+  +chooseVictim(keys: Collection<String>): String
+}
+
+class EvictOldestPolicy <<ConcreteStrategy>> {
+  +chooseVictim(keys: Collection<String>): String
+}
+
+class RejectWritesPolicy <<ConcreteStrategy>> {
+  +chooseVictim(keys: Collection<String>): String
+}
+
+class BoundedStore <<Context>> {
+  -inner: Store
+  -capacity: int
+  -policy: EvictionPolicy
+  -keys: Set<String>
+  +set(key: String, value: String): void
+  +get(key: String): String
+  +delete(key: String): boolean
+  +size(): int
+}
+
+interface Store
+
+EvictionPolicy <|.. EvictOldestPolicy
+EvictionPolicy <|.. RejectWritesPolicy
+BoundedStore o--> "1" EvictionPolicy : policy
+Store <|.. BoundedStore
+BoundedStore o--> "1" Store : inner
+
+note right of EvictionPolicy
+  chooseVictim returns the key to
+  evict, or null to reject the write.
+  Policy is chosen at construction
+  and swappable without touching
+  BoundedStore.
+end note
+@enduml
