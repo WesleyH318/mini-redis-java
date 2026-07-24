@@ -1,4 +1,6 @@
 # mini-redis-java
+![CI](https://github.com/WesleyH318/mini-redis-java/actions/workflows/ci.yml/badge.svg)
+
 A single-node, in-memory key-value store inspired by Redis, built in Java to demonstrate object-oriented design patterns.
 
 ## Sprint 1 Checklist
