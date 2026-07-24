@@ -1,5 +1,7 @@
 package main;
 
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.Scanner;
 import main.commands.Command;
 import main.commands.CommandFactory;
@@ -9,18 +11,27 @@ import main.commands.ExitCommand;
 public class Repl {
 
     private final Store store;
-    private final CommandFactory factory = new CommandFactory();
+    private final CommandFactory factory;
+    private final InputStream in;
+    private final PrintStream out;
 
-    public Repl(Store store) {
+    public Repl(Store store, CommandFactory factory) {
+        this(store, factory, System.in, System.out);
+    }
+
+    public Repl(Store store, CommandFactory factory, InputStream in, PrintStream out) {
         this.store = store;
+        this.factory = factory;
+        this.in = in;
+        this.out = out;
     }
 
     public void run() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("mini-redis (type HELP for commands, EXIT to quit)");
+        Scanner scanner = new Scanner(in);
+        out.println("mini-redis (type HELP for commands, EXIT to quit)");
 
         while (true) {
-            System.out.print("> ");
+            out.print("> ");
             if (!scanner.hasNextLine()) break;
             String line = scanner.nextLine().trim();
             if (line.isEmpty()) continue;
@@ -31,10 +42,10 @@ public class Repl {
             String result = command.execute(store, parts);
 
             if (ExitCommand.EXIT_SIGNAL.equals(result)) {
-                System.out.println("bye");
+                out.println("bye");
                 return;
             }
-            System.out.println(result);
+            out.println(result);
         }
     }
 }
